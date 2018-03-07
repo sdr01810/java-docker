@@ -1,0 +1,12 @@
+**/.[^.]*
+
+**/*~
+**/*.swp
+
+**/Docker*
+**/Make*
+
+artifacts.d
+artifacts.available.d
+
+test.installation.d

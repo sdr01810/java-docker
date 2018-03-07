@@ -1,0 +1,36 @@
+####
+## Bare bones needs
+##
+bash
+less
+perl
+procps
+sudo
+
+####
+## Archive formats
+##
+gzip
+tar
+
+####
+## Text editors
+##
+vim
+
+####
+## OpenJDK
+##
+openjdk-8-jre
+openjdk-9-jre
+
+####
+## Oracle Java
+##
+oracle-java-8-jre
+oracle-java-8-jre-x86_32
+oracle-java-8u162-jdk
+
+####
+## Other
+##

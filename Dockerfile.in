@@ -1,0 +1,68 @@
+FROM @make:docker_base_image@
+
+STOPSIGNAL SIGTERM
+
+#^
+#^-- specified by the base image
+#
+#v-- specified by the current image
+#v
+
+ENV java_docker_image_user_name=root
+ENV java_docker_image_group_name=root
+
+ENV java_docker_image_setup_root=/var/local/workspaces/java/setup
+
+##
+
+ARG java_docker_image_fails_on_missing_oracle_java_package=false
+
+##
+
+ENV JAVA_ARTIFACTS_ROOT_DPN=/var/local/downloads
+
+ENV JAVA_INSTALLATION_ROOT_PARENT_DPN=/usr/lib/jvm
+
+##
+
+USER    root
+WORKDIR /
+
+RUN umask 0002 && mkdir -p "${ARTIFACTS_ROOT_DPN:?}"
+
+COPY artifacts.d/ "${ARTIFACTS_ROOT_DPN:?}"
+
+##
+
+USER    root
+WORKDIR "${java_docker_image_setup_root}"
+
+COPY ./ ./
+
+RUN  chmod a+rx *.sh
+
+##
+
+USER    root
+WORKDIR "${java_docker_image_setup_root}"
+
+RUN egrep -v -h '^\s*#' packages.needed.[0-9]*.txt | ./oracle-java-package.sh egrep -v > packages.needed.filtered.standard.txt
+RUN egrep -v -h '^\s*#' packages.needed.[0-9]*.txt | ./oracle-java-package.sh egrep    > packages.needed.filtered.oracle-java.txt
+
+RUN apt-get update && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y apt-utils debconf && \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y $(cat packages.needed.filtered.standard.txt) && \
+	./oracle-java-package.sh install $(cat packages.needed.filtered.oracle-java.txt) && \
+	rm -rf /var/local/downloads/* && \
+	rm -rf /var/lib/apt/lists/* && \
+	:
+
+##
+
+USER    root
+WORKDIR "${java_docker_image_setup_root}"
+
+ENTRYPOINT ["./start.sh"]
+
+##
+

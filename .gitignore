@@ -1,0 +1,5 @@
+/artifacts.*.d
+/artifacts.d/[^.]*
+
+/test.installation.d/[^.]*
+
